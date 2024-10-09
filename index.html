@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Player and Court Match Generator</title>
+    <style>
+      /* Global Styles */
+      body {
+        font-family: "Arial", sans-serif;
+        background-color: #f2f4f8;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        padding: 20px;
+      }
+
+      /* Container Styles */
+      .container {
+        width: 850px;
+        background: #ffffff;
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        max-height: 90vh;
+        overflow-y: auto;
+      }
+
+      /* Header Styles */
+      h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #333;
+      }
+
+      /* Flex Container for Inputs */
+      .input-group {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        gap: 20px;
+      }
+
+      .input-group label {
+        font-size: 16px;
+        flex: 1;
+        color: #555;
+      }
+
+      .input-group input {
+        flex: 1;
+        padding: 10px;
+        font-size: 14px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        outline: none;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1) inset;
+      }
+
+      /* Button Styles */
+      button {
+        padding: 12px 15px;
+        font-size: 16px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        width: 48%;
+        transition: background-color 0.3s ease;
+      }
+
+      button:hover {
+        background-color: #0056b3;
+      }
+
+      /* Player and Match Container Styles */
+      .players-container,
+      .matches-container {
+        margin-top: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        justify-content: space-around;
+      }
+
+      /* Individual Player Styles */
+      .player {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        width: 48%;
+        background: #e9ecef;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+      }
+
+      .player input {
+        width: 70px;
+        padding: 5px;
+        border: 1px solid #007bff;
+        border-radius: 5px;
+        outline: none;
+        text-align: center;
+      }
+
+      /* Match Display Styles */
+      .match {
+        width: 48%;
+        padding: 12px;
+        background: #d1ecf1;
+        border-radius: 8px;
+        border: 1px solid #bee5eb;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .match span {
+        font-size: 14px;
+        margin: 2px 0;
+        color: #0056b3;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Player and Court Match Generator</h2>
+
+      <!-- Input Group for Players and Courts -->
+      <div class="input-group">
+        <label for="numPlayers">Number of Players (max 20):</label>
+        <input type="number" id="numPlayers" min="1" max="20" />
+        <label for="numCourts">Number of Courts:</label>
+        <input type="number" id="numCourts" min="1" max="10" />
+      </div>
+
+      <!-- Buttons for Generating Players and Matches -->
+      <div class="input-group">
+        <button onclick="generatePlayers()">Generate Players</button>
+        <button onclick="generateMatches()">Generate Matches</button>
+      </div>
+
+      <!-- Player and Matches Container -->
+      <div class="players-container"></div>
+      <div class="matches-container"></div>
+    </div>
+
+    <script>
+      let players = [];
+
+      // Function to Generate Players with Input Fields for Ratings
+      function generatePlayers() {
+        const numPlayers = parseInt(
+          document.getElementById("numPlayers").value
+        );
+        if (isNaN(numPlayers) || numPlayers < 1 || numPlayers > 20) {
+          alert("Please enter a valid number of players between 1 and 20.");
+          return;
+        }
+
+        players = [];
+        const playersContainer = document.querySelector(".players-container");
+        playersContainer.innerHTML = "";
+
+        for (let i = 1; i <= numPlayers; i++) {
+          const playerDiv = document.createElement("div");
+          playerDiv.classList.add("player");
+
+          playerDiv.innerHTML = `
+                    Player ${i} <input type="number" value="0.0" min="0" max="100" step="0.1" id="rating${i}" onchange="updatePlayerRating(${i})">
+                `;
+          players.push({ id: i, name: `Player ${i}`, rating: 0.0 });
+          playersContainer.appendChild(playerDiv);
+        }
+      }
+
+      // Function to Update Player Ratings
+      function updatePlayerRating(playerId) {
+        const rating = parseFloat(
+          document.getElementById(`rating${playerId}`).value
+        );
+        players.find((player) => player.id === playerId).rating = rating;
+      }
+
+      // Function to Generate Matches and Assign Courts
+      function generateMatches() {
+        const numCourts = parseInt(document.getElementById("numCourts").value);
+
+        if (isNaN(numCourts) || numCourts < 1) {
+          alert("Please enter a valid number of courts (minimum 1).");
+          return;
+        }
+
+        if (players.length < 2) {
+          alert("Please generate at least 2 players to create matches.");
+          return;
+        }
+
+        const matchesContainer = document.querySelector(".matches-container");
+        matchesContainer.innerHTML = "";
+
+        // Generate all possible 1-vs-1 matches
+        const matches = [];
+        for (let i = 0; i < players.length; i++) {
+          for (let j = i + 1; j < players.length; j++) {
+            matches.push({ player1: players[i], player2: players[j] });
+          }
+        }
+
+        // Shuffle the matches randomly for court assignment
+        matches.sort(() => Math.random() - 0.5);
+
+        // Assign matches to random courts and display them
+        matches.forEach((match, index) => {
+          const courtNumber = Math.floor(Math.random() * numCourts) + 1; // Random court assignment
+
+          const matchDiv = document.createElement("div");
+          matchDiv.classList.add("match");
+          matchDiv.innerHTML = `
+                    <span>Match ${index + 1}</span>
+                    <span>${
+                      match.player1.name
+                    } (Rating: ${match.player1.rating.toFixed(1)}) vs ${
+            match.player2.name
+          } (Rating: ${match.player2.rating.toFixed(1)})</span>
+                    <span>Court: ${courtNumber}</span>
+                `;
+          matchesContainer.appendChild(matchDiv);
+        });
+      }
+    </script>
+  </body>
+</html>
