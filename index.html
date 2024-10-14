@@ -109,7 +109,7 @@
       }
 
       /* Match Display Styles */
-      .match {
+      .match-container {
         width: 48%;
         padding: 12px;
         background: #d1ecf1;
@@ -120,7 +120,7 @@
         align-items: center;
       }
 
-      .match span {
+      .match {
         font-size: 14px;
         margin: 2px 0;
         color: #0056b3;
@@ -133,10 +133,10 @@
 
       <!-- Input Group for Players and Courts -->
       <div class="input-group">
-        <label for="numPlayers">Number of Players (max 20):</label>
-        <input type="number" id="numPlayers" min="1" max="20" />
-        <label for="numCourts">Number of Courts:</label>
-        <input type="number" id="numCourts" min="1" max="10" />
+        <label for="numPlayers">Number of Players (max 10):</label>
+        <input type="number" id="numPlayers" min="1" max="10" />
+        <label for="numCourts">Number of Courts (max 2):</label>
+        <input type="number" id="numCourts" min="1" max="2" />
       </div>
 
       <!-- Buttons for Generating Players and Matches -->
@@ -158,8 +158,8 @@
         const numPlayers = parseInt(
           document.getElementById("numPlayers").value
         );
-        if (isNaN(numPlayers) || numPlayers < 1 || numPlayers > 20) {
-          alert("Please enter a valid number of players between 1 and 20.");
+        if (isNaN(numPlayers) || numPlayers < 1 || numPlayers > 10) {
+          alert("Please enter a valid number of players between 1 and 10.");
           return;
         }
 
@@ -183,55 +183,81 @@
       function updatePlayerRating(playerId) {
         const rating = parseFloat(
           document.getElementById(`rating${playerId}`).value
-        );
-        players.find((player) => player.id === playerId).rating = rating;
+        ).toFixed(1);
+        players.find((player) => player.id === playerId).rating =
+          parseFloat(rating);
       }
 
       // Function to Generate Matches and Assign Courts
       function generateMatches() {
         const numCourts = parseInt(document.getElementById("numCourts").value);
 
-        if (isNaN(numCourts) || numCourts < 1) {
-          alert("Please enter a valid number of courts (minimum 1).");
+        if (isNaN(numCourts) || numCourts < 1 || numCourts > 2) {
+          alert("Please enter a valid number of courts (maximum 2).");
           return;
         }
 
-        if (players.length < 2) {
+        const totalPlayers = players.length;
+        if (totalPlayers < 2) {
           alert("Please generate at least 2 players to create matches.");
           return;
         }
 
+        const playersInPlay =
+          totalPlayers % 2 === 0 ? totalPlayers : totalPlayers - 1;
+
         const matchesContainer = document.querySelector(".matches-container");
         matchesContainer.innerHTML = "";
 
-        // Generate all possible 1-vs-1 matches
+        // Split players for court distribution and match types (1v1 or 2v2)
         const matches = [];
-        for (let i = 0; i < players.length; i++) {
-          for (let j = i + 1; j < players.length; j++) {
-            matches.push({ player1: players[i], player2: players[j] });
+        let playersForMatches = [...players].slice(0, playersInPlay);
+
+        while (playersForMatches.length > 0) {
+          const courtMatches = [];
+          if (playersForMatches.length >= 4 && Math.random() > 0.5) {
+            // Generate 2v2 match
+            courtMatches.push({
+              players: playersForMatches.splice(0, 4),
+              type: "2v2",
+            });
+          } else {
+            // Generate 1v1 match
+            courtMatches.push({
+              players: playersForMatches.splice(0, 2),
+              type: "1v1",
+            });
           }
+          matches.push(courtMatches);
         }
 
-        // Shuffle the matches randomly for court assignment
-        matches.sort(() => Math.random() - 0.5);
+        // Display matches on courts
+        for (let court = 1; court <= numCourts; court++) {
+          const matchContainer = document.createElement("div");
+          matchContainer.classList.add("match-container");
 
-        // Assign matches to random courts and display them
-        matches.forEach((match, index) => {
-          const courtNumber = Math.floor(Math.random() * numCourts) + 1; // Random court assignment
+          matchContainer.innerHTML = `<h3>Court ${court}</h3>`;
 
-          const matchDiv = document.createElement("div");
-          matchDiv.classList.add("match");
-          matchDiv.innerHTML = `
-                    <span>Match ${index + 1}</span>
-                    <span>${
-                      match.player1.name
-                    } (Rating: ${match.player1.rating.toFixed(1)}) vs ${
-            match.player2.name
-          } (Rating: ${match.player2.rating.toFixed(1)})</span>
-                    <span>Court: ${courtNumber}</span>
-                `;
-          matchesContainer.appendChild(matchDiv);
-        });
+          matches.forEach((match, index) => {
+            if (index % numCourts === court - 1) {
+              const matchDiv = document.createElement("div");
+              matchDiv.classList.add("match");
+
+              if (match[0].type === "1v1") {
+                matchDiv.innerHTML = `
+                      <span>${match[0].players[0].name} (Rating: ${match[0].players[0].rating}) vs ${match[0].players[1].name} (Rating: ${match[0].players[1].rating})</span>
+                    `;
+              } else {
+                matchDiv.innerHTML = `
+                      <span>${match[0].players[0].name} & ${match[0].players[1].name} (Rating: ${match[0].players[0].rating}, ${match[0].players[1].rating}) vs ${match[0].players[2].name} & ${match[0].players[3].name} (Rating: ${match[0].players[2].rating}, ${match[0].players[3].rating})</span>
+                    `;
+              }
+              matchContainer.appendChild(matchDiv);
+            }
+          });
+
+          matchesContainer.appendChild(matchContainer);
+        }
       }
     </script>
   </body>
