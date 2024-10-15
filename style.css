@@ -1,0 +1,143 @@
+/* Global Styles */
+body {
+    font-family: "Arial", sans-serif;
+    background-color: #f2f4f8;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    padding: 20px;
+}
+
+/* Container Styles */
+.container {
+    width: 850px;
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+/* Header Styles */
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Flex Container for Inputs */
+.input-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    gap: 20px;
+}
+
+.input-group label {
+    font-size: 16px;
+    flex: 1;
+    color: #555;
+}
+
+.input-group input {
+    flex: 1;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    outline: none;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1) inset;
+}
+
+/* Button Styles */
+button {
+    padding: 12px 15px;
+    font-size: 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 48%;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+/* Player and Match Container Styles */
+.players-container,
+.matches-container {
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: space-around;
+}
+
+/* Individual Player Styles */
+.player {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    width: 48%;
+    background: #e9ecef;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+.player input {
+    width: 70px;
+    padding: 5px;
+    border: 1px solid #007bff;
+    border-radius: 5px;
+    outline: none;
+    text-align: center;
+}
+
+/* Match Display Styles */
+.match-container {
+    width: 100%;
+    padding: 12px;
+    background: #d1ecf1;
+    border-radius: 8px;
+    border: 1px solid #bee5eb;
+    margin-bottom: 20px;
+}
+
+.match {
+    font-size: 16px;
+    margin: 8px 0;
+    color: #0056b3;
+    display: flex;
+    justify-content: flex-start;
+    /* Align matches to the left */
+    align-items: center;
+    background-color: #ffffff;
+    padding: 10px;
+    border: 1px solid #bee5eb;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.match-index {
+    font-weight: bold;
+    margin-right: 5px;
+    color: #007bff;
+    /* Or any color you prefer */
+    display: inline-block;
+    /* Ensure it is inline with the match details */
+    width: 30px;
+    /* Adjust width as needed */
+}
